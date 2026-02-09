@@ -4,49 +4,66 @@ import ToDoItem from "./ToDoItem";
 
 const ToDoList = ({ todoList, setToDoList }) => {
 
+  // useRef is used to directly access the input field without re-rendering
   const inputRef = useRef();
+
+  // editId stores the ID of the todo which is currently being edited
   const [editId, setEditId] = useState(null);
 
+  // Function to add new task OR update existing task
   const addTask = () => {
+    // input value trimming extra space
     const task = inputRef.current.value.trim();
+    // if  empty  input  return
     if (task === "") return;
 
+    // if edit id exist then update it
     if (editId !== null) {
       setToDoList((prev) =>
         prev.map((todo) =>
-          todo.id === editId ? { ...todo, text: task } : todo
+          todo.id === editId ? { ...todo, text: task } : todo  // update the text of matched todo
         )
       );
+      // reset edit module
       setEditId(null);
     } else {
+      // create new todo object with id text 
       const newTodo = {
         id: Date.now(),
         text: task,
         isComplete: false,
       };
-
+      // add new todo to list
       setToDoList((prev) => [...prev, newTodo]);
     }
 
+    // Clear input field after adding/updating
     inputRef.current.value = "";
   };
 
+  // Function to start editing a task
   const startEdit = (id, text) => {
+    // Put selected task text into input field
     inputRef.current.value = text;
+    // Store id of task being edited
     setEditId(id);
   };
 
+  // function for delete any task 
   const deleteTodo = (id) => {
+    
     setToDoList((prev) =>
+      // delete whose it matches
       prev.filter((todo) => todo.id !== id)
     );
   };
 
+  // function toggle to completion status
   const toggle = (id) => {
     setToDoList((prev) =>
       prev.map((todo) =>
         todo.id === id
-          ? { ...todo, isComplete: !todo.isComplete }
+          ? { ...todo, isComplete: !todo.isComplete } // toggle status
           : todo
       )
     );
@@ -60,7 +77,7 @@ const ToDoList = ({ todoList, setToDoList }) => {
         <h1 className="text-3xl font-semibold">To Do List</h1>
       </div>
 
-      {/* Input */}
+      {/* Input Section */}
       <div className="flex items-center my-7 bg-gray-200 rounded-full">
         <input
           ref={inputRef}
@@ -76,7 +93,7 @@ const ToDoList = ({ todoList, setToDoList }) => {
         </button>
       </div>
 
-      {/* List */}
+      {/* To Do List */}
       <div>
         {todoList.map((item) => (
           <ToDoItem
